@@ -18,9 +18,15 @@ GROUP BY e.ECNumber,p.PartyNameEn,c.candidatelastname,pr.CandidateID
 ORDER BY e.ECNumber ASC,sum(pr.votes) desc
 
 -- Output winners only
-SELECT e.ECNumber,e.EcNameEn,a.CandidateLastName,a.PartyNameEn,a.Votes 
-FROM (select ECNumber,CandidateLastName,PartyNameEn,Votes,ROW_NUMBER() OVER (PARTITION BY ECNumber ORDER BY votes DESC) as rn
-FROM #Candidates) as a
+SELECT e.ECNumber,e.EcNameEn,a.CandidateLastName,a.PartyNameEn,a.Votes
+FROM	(select 
+			ECNumber,
+			CandidateLastName,
+			PartyNameEn,
+			Votes,
+			ROW_NUMBER() OVER (PARTITION BY ECNumber ORDER BY votes DESC) as rn
+		FROM #Candidates) as a
 INNER JOIN ED e ON a.ECNumber = e.ECNumber AND e.ElectionYear=@Year
 WHERE rn=1
+
 
